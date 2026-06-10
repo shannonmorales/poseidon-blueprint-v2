@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POSEIDÓN · Service Blueprint Concept</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', serif;
+    background: #0a1628;
+    color: #e8dfc8;
+    min-height: 100vh;
+  }
+  .ocean-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: linear-gradient(180deg, #0a1628 0%, #0d2145 40%, #0a3060 100%);
+    overflow: hidden;
+  }
+  .wave { position: absolute; bottom: 0; left: -100%; width: 300%; height: 100px; opacity: 0.07; animation: wave-move linear infinite; }
+  .wave path { fill: #4a9eff; }
+  .wave-1 { animation-duration: 12s; }
+  .wave-2 { animation-duration: 20s; bottom: 15px; opacity: 0.04; }
+  @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(33.33%); } }
+  .stars { position: absolute; inset: 0; }
+  .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: 0.2; } 50% { opacity: 0.9; } }
+  header {
+    position: relative; z-index: 10;
+    text-align: center; padding: 40px 20px 20px;
+  }
+  .anchor { font-size: 44px; display: block; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  .logo-text { font-size: 10px; letter-spacing: 5px; color: #c9a84c; text-transform: uppercase; margin-bottom: 6px; }
+  h1 { font-size: 26px; font-weight: normal; color: #f0e6cc; letter-spacing: 2px; }
+  .subtitle { font-size: 11px; color: #8aadcf; letter-spacing: 3px; margin-top: 5px; text-transform: uppercase; }
+  .view-toggle { position: relative; z-index: 10; display: flex; justify-content: center; gap: 8px; margin: 22px 0 14px; flex-wrap: wrap; }
+  .toggle-btn { padding: 7px 18px; border-radius: 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; border: 1px solid #2a4a6b; background: transparent; color: #8aadcf; transition: all 0.3s; font-family: Georgia, serif; }
+  .toggle-btn.active { background: #c9a84c; color: #0a1628; border-color: #c9a84c; font-weight: bold; }
+  .phase-nav { position: relative; z-index: 10; display: flex; justify-content: center; gap: 0; margin: 0 16px 0; overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
+  .phase-pill { padding: 5px 12px; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: 1px solid #1e3a5a; background: rgba(10,22,40,0.6); color: #8aadcf; transition: all 0.3s; white-space: nowrap; border-right: none; font-family: Georgia, serif; }
+  .phase-pill:first-child { border-radius: 8px 0 0 8px; }
+  .phase-pill:last-child { border-radius: 0 8px 8px 0; border-right: 1px solid #1e3a5a; }
+  .phase-pill.active { background: #1a3a5c; color: #c9a84c; border-color: #c9a84c; }
+  .phase-pill:hover:not(.active) { background: #152d4a; color: #e8dfc8; }
+  .grid-wrap { position: relative; z-index: 10; margin: 18px 16px; border: 1px solid #1e3a5a; border-radius: 10px; overflow: hidden; background: rgba(8,18,35,0.88); overflow-x: auto; }
+  .bp-grid { min-width: 1100px; }
+  .phase-header { display: grid; grid-template-columns: 130px repeat(7, 1fr); border-bottom: 1px solid #1e3a5a; }
+  .lane-label-hdr { padding: 10px; background: rgba(10,18,30,0.97); border-right: 1px solid #1e3a5a; font-size: 8px; letter-spacing: 2px; color: #4a7a9b; text-transform: uppercase; display: flex; align-items: center; position: sticky; left: 0; z-index: 5; }
+  .phase-col-hdr { padding: 12px 8px; text-align: center; border-right: 1px solid #1e3a5a; font-size: 9px; letter-spacing: 1px; color: #c9a84c; text-transform: uppercase; transition: background 0.3s; }
+  .phase-col-hdr .pnum { display: block; font-size: 22px; color: #2a5a8a; font-family: Georgia, serif; }
+  .phase-col-hdr.hl { background: rgba(201,168,76,0.1); }
+  .swim-lane { display: grid; grid-template-columns: 130px repeat(7, 1fr); border-bottom: 2px solid #2a4a6b; }
+  .lane-lbl { padding: 10px; background: rgba(10,18,30,0.97); border-right: 1px solid #1e3a5a; display: flex; flex-direction: column; justify-content: center; position: sticky; left: 0; z-index: 5; }
+  .l-actor { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #4a7a9b; margin-bottom: 3px; }
+  .l-name { font-size: 12px; color: #8aadcf; line-height: 1.4; }
+  .cell { padding: 12px 10px; border-right: 1px solid #1e3a5a; font-size: 12px; line-height: 1.6; color: #8aadcf; cursor: pointer; transition: all 0.25s; }
+  .cell:hover { background: rgba(42,90,138,0.15); color: #e8dfc8; }
+  .cell.hl { background: rgba(201,168,76,0.07); }
+  .cell.empty { color: #1e3a5a; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .pain { display: block; font-size: 10.5px; color: #e07a5f; margin-top: 5px; line-height: 1.5; }
+  .opp { display: block; font-size: 10.5px; color: #4caf82; margin-top: 5px; line-height: 1.5; }
+  .sys-lane { background: rgba(201,168,76,0.03); border-top: 1px solid rgba(201,168,76,0.2); }
+  .sys-lane .cell { color: #4caf82; font-style: italic; font-size: 11px; }
+  .mode-asis .opp { display: none; }
+  .mode-tobe .pain { display: none; }
+  .tip { position: fixed; background: #0d2145; border: 1px solid #c9a84c; border-radius: 8px; padding: 11px 13px; max-width: 210px; font-size: 11px; line-height: 1.6; color: #e8dfc8; z-index: 999; pointer-events: none; opacity: 0; transition: opacity 0.18s; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+  .tip.on { opacity: 1; }
+  .tip-title { font-size: 9px; letter-spacing: 2px; color: #c9a84c; text-transform: uppercase; margin-bottom: 5px; }
+  .legend { position: relative; z-index: 10; display: flex; gap: 18px; justify-content: center; margin: 14px 16px; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #8aadcf; letter-spacing: 1px; }
+  .leg-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .stats { position: relative; z-index: 10; display: flex; justify-content: center; gap: 28px; margin: 0 16px 24px; padding: 12px; border: 1px solid #1e3a5a; border-radius: 8px; background: rgba(8,18,35,0.6); flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .snum { font-size: 20px; color: #c9a84c; display: block; }
+  .slbl { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #4a7a9b; margin-top: 1px; }
+</style>
+</head>
+<body>
+<div class="ocean-bg" id="oceanBg">
+  <div class="stars" id="starsEl"></div>
+  <svg class="wave wave-1" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z"/></svg>
+  <svg class="wave wave-2" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,40 C200,80 400,10 600,50 C800,90 1000,30 1200,40 L1200,120 L0,120 Z"/></svg>
+</div>
+<header>
+  <span class="anchor">⚓</span>
+  <div class="logo-text">POSEIDÓN · Oficina del Comisionado de Navegación · DRNA</div>
+  <h1>Service Blueprint</h1>
+  <div class="subtitle">Licencias Náuticas · Versión 14 · Junio 2026</div>
+</header>
+<div class="view-toggle">
+  <button class="toggle-btn active" onclick="setView('both')" id="vb">AS-IS + TO-BE</button>
+  <button class="toggle-btn" onclick="setView('asis')" id="va">▲ Solo AS-IS</button>
+  <button class="toggle-btn" onclick="setView('tobe')" id="vt">→ Solo TO-BE</button>
+</div>
+<div class="phase-nav" id="phaseNav">
+  <div class="phase-pill active" onclick="setPhase(0)">Todas</div>
+  <div class="phase-pill" onclick="setPhase(1)">01 Descubrimiento</div>
+  <div class="phase-pill" onclick="setPhase(2)">02 Inscripción</div>
+  <div class="phase-pill" onclick="setPhase(3)">03 Curso</div>
+  <div class="phase-pill" onclick="setPhase(4)">04 Transmisión</div>
+  <div class="phase-pill" onclick="setPhase(5)">05 Validación</div>
+  <div class="phase-pill" onclick="setPhase(6)">06 Expedición</div>
+  <div class="phase-pill" onclick="setPhase(7)">07 Post-emisión</div>
+</div>
+<div class="grid-wrap">
+<div class="bp-grid" id="bpGrid">
+  <div class="phase-header">
+    <div class="lane-label-hdr">Actor / Sistema</div>
+    <div class="phase-col-hdr" data-ph="1"><span class="pnum">01</span>Descubrimiento</div>
+    <div class="phase-col-hdr" data-ph="2"><span class="pnum">02</span>Inscripción</div>
+    <div class="phase-col-hdr" data-ph="3"><span class="pnum">03</span>Curso</div>
+    <div class="phase-col-hdr" data-ph="4"><span class="pnum">04</span>Transmisión</div>
+    <div class="phase-col-hdr" data-ph="5"><span class="pnum">05</span>Validación</div>
+    <div class="phase-col-hdr" data-ph="6"><span class="pnum">06</span>Expedición</div>
+    <div class="phase-col-hdr" data-ph="7"><span class="pnum">07</span>Post-emisión</div>
+  </div>
+  <div class="swim-lane">
+    <div class="lane-lbl"><span class="l-actor">Usuario final</span><span class="l-name">Ciudadano</span></div>
+    <div class="cell" data-col="1" data-tip="El ciudadano se entera del requisito de licencia náutica por boca a boca, una multa recibida, o por investigación propia. No hay información pública clara en el portal del DRNA.">Se entera del requisito por boca a boca, multa o investigación propia.<span class="pain">▲ Requisitos no publicados en web del DRNA</span></div>
+    <div class="cell" data-col="2" data-tip="Contacta directamente a la entidad académica, verifica disponibilidad del próximo curso, se inscribe y realiza el pago correspondiente.">Contacta entidad, verifica disponibilidad, se inscribe y paga.</div>
+    <div class="cell" data-col="3" data-tip="Asiste al curso (cumpliendo las horas requeridas), aprueba el examen con mínimo 80% y recibe su certificado de aprobación.">Asiste al curso. Aprueba examen (mín. 80%). Recibe certificado.</div>
+    <div class="cell" data-col="4" data-tip="El ciudadano entra en un período de espera pasiva hasta ser incluido en la lista mensual que la entidad envía a la OCN. No tiene visibilidad sobre errores ni tiempos.">Espera ser incluido en lista mensual.<span class="pain">▲ No sabe si hay errores ni cuándo estará disponible la lista</span></div>
+    <div class="cell" data-col="5" data-tip="El ciudadano debe presentarse físicamente en la OCN con su ID para una validación manual. Corre el riesgo de que la lista no haya llegado aún o tenga errores.">Se presenta en la OCN con ID. Espera validación manual.<span class="pain">▲ Riesgo de visita en vano si la lista no llegó o tiene errores</span></div>
+    <div class="cell" data-col="6" data-tip="Llena solicitud física, paga $100 (Clave 1150) y recibe su licencia vitalicia en formato físico.">Llena solicitud, paga $100 (Clave 1150). Recibe licencia vitalicia.<span class="opp">→ Perfil digital en POSEIDÓN. Pago en línea habilitado.</span></div>
+    <div class="cell" data-col="7" data-tip="Si pierde la licencia puede obtener un duplicado por $50. Los extranjeros no son elegibles para obtener la licencia en PR.">Duplicado ($50) si pierde licencia.<span class="pain">▲ Extranjeros: no elegibles</span></div>
+  </div>
+  <div class="swim-lane">
+    <div class="lane-lbl"><span class="l-actor">Proveedor autorizado</span><span class="l-name">Entidad Académica</span></div>
+    <div class="cell" data-col="1" data-tip="Recibe inscripciones de ciudadanos interesados, programa los cursos y coordina el envío mensual de listas a la OCN.">Recibe inscripciones. Programa cursos. Lista mensual a OCN.</div>
+    <div class="cell empty" data-col="2">—</div>
+    <div class="cell" data-col="3" data-tip="Imparte el curso náutico requerido, administra el examen y emite el certificado a quienes aprueban. Mar Navigation opera hasta 4 cursos por semana, lo que podría violar el mínimo de horas.">Imparte curso. Administra examen. Emite certificado.<span class="pain">▲ Mar Navigation: hasta 4 cursos/semana — posible incumplimiento de horas</span></div>
+    <div class="cell" data-col="4" data-tip="Envía la lista mensual con nombre, fecha de nacimiento, ID y nota de cada aprobado. El envío se hace por emails personales sin canal formal ni confirmación de recibo.">Envía lista mensual (nombre, fecha nac., ID, nota).<span class="pain">▲ Envío por emails personales. Sin canal formal ni acuse de recibo.</span><span class="opp">→ Portal seguro / API para envío de listas a POSEIDÓN</span></div>
+    <div class="cell empty" data-col="5">—</div>
+    <div class="cell empty" data-col="6">—</div>
+    <div class="cell" data-col="7" data-tip="Cuando la OCN detecta errores en las listas enviadas, la entidad académica debe corregirlos y reenviar.">Corrige errores en listas cuando OCN los detecta.</div>
+  </div>
+  <div class="swim-lane">
+    <div class="lane-lbl"><span class="l-actor">Regulador interno</span><span class="l-name">División de Educación Marítima</span></div>
+    <div class="cell" data-col="1" data-tip="Autoriza a las entidades académicas junto con NASBLA y mantiene el registro de las 5 entidades activas. No existe contrato formal ni proceso de renovación estructurado.">Autoriza entidades con NASBLA. Mantiene registro de 5 entidades.<span class="pain">▲ Sin contrato formal ni renovación estructurada</span></div>
+    <div class="cell empty" data-col="2">—</div>
+    <div class="cell" data-col="3" data-tip="Regula el contenido curricular y las horas mínimas del curso. Está pendiente la respuesta de NASBLA sobre una nueva directriz de seguridad.">Regula contenido y horas mínimas del curso.<span class="pain">▲ Pendiente directriz de NASBLA</span><span class="opp">→ Módulo de gestión de entidades en POSEIDÓN</span></div>
+    <div class="cell" data-col="4" data-tip="Recibe las listas vía email y coordina con el Personal de Registro de la OCN. Solo hay 3 emails personales como canal de comunicación, sin bandeja compartida oficial.">Recibe listas vía email. Coordina con Registro OCN.<span class="pain">▲ 3 emails personales como único canal. Sin bandeja compartida.</span></div>
+    <div class="cell empty" data-col="5">—</div>
+    <div class="cell empty" data-col="6">—</div>
+    <div class="cell" data-col="7" data-tip="Gestiona los casos excepcionales: ciudadanos extranjeros, certificados con irregularidades, entidades académicas con incidencias. No existe protocolo documentado para estos casos.">Maneja casos edge: extranjeros, certificados irregulares.<span class="pain">▲ Sin protocolo documentado para casos edge</span></div>
+  </div>
+  <div class="swim-lane">
+    <div class="lane-lbl"><span class="l-actor">Operador del sistema</span><span class="l-name">Personal de Registro OCN</span></div>
+    <div class="cell empty" data-col="1">—</div>
+    <div class="cell empty" data-col="2">—</div>
+    <div class="cell empty" data-col="3">—</div>
+    <div class="cell" data-col="4" data-tip="Recibe la lista mensual de la entidad y la procesa de forma manual. No existe flujo definido para cuando hay errores en la lista.">Recibe lista mensual. La procesa manualmente.<span class="pain">▲ Sin flujo definido para corrección de errores</span><span class="opp">→ Validación automática en POSEIDÓN por SS o licencia</span></div>
+    <div class="cell" data-col="5" data-tip="Busca al ciudadano en la lista recibida y valida su identidad contra SS o licencia de conducir. No hay búsqueda global disponible en el sistema Neptuno actual.">Busca ciudadano en lista. Valida ID manualmente.<span class="pain">▲ Sin búsqueda global en Neptuno. Validación manual contra email.</span><span class="opp">→ Validación automática en POSEIDÓN</span></div>
+    <div class="cell" data-col="6" data-tip="Crea el perfil del ciudadano en Neptuno, emite la licencia física y cobra los $100. El sistema actual solicita los documentos de nuevo en cada transacción, aunque el ciudadano ya tenga un perfil previo.">Crea perfil en Neptuno. Emite licencia. Cobra $100.<span class="pain">▲ Sistema pide documentos repetidos en múltiples transacciones</span><span class="opp">→ Perfil persistente en POSEIDÓN. Historial del ciudadano.</span></div>
+    <div class="cell" data-col="7" data-tip="Procesa solicitudes de duplicado por $50 y gestiona la tercera autorización en casos de propietario fallecido. No hay protocolo documentado para estos casos edge.">Procesa duplicados ($50). Autorización con propietario difunto.<span class="pain">▲ Sin protocolo documentado para casos edge</span></div>
+  </div>
+  <div class="swim-lane sys-lane">
+    <div class="lane-lbl"><span class="l-actor">Sistema TO-BE</span><span class="l-name">POSEIDÓN</span></div>
+    <div class="cell" data-col="1">→ Portal público: requisitos, directorio de entidades y guía del proceso</div>
+    <div class="cell" data-col="2">→ Directorio de entidades con contactos y calendario de cursos</div>
+    <div class="cell" data-col="3">→ Registro de resultados vinculado al perfil. Validación de certificado por número.</div>
+    <div class="cell" data-col="4">→ API segura para ingesta de listas de aprobados desde entidades</div>
+    <div class="cell" data-col="5">→ Validación automática: perfil activo al aparecer en lista aprobada</div>
+    <div class="cell" data-col="6">→ Licencia digital + pago en línea + notificación automática</div>
+    <div class="cell" data-col="7">→ Módulo de duplicados. Flags para edge cases. Historial de transacciones.</div>
+  </div>
+</div>
+</div>
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#e07a5f"></div>▲ Punto de dolor (AS-IS)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#4caf82"></div>→ Oportunidad (TO-BE)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#c9a84c"></div>Hover sobre celda para detalle</div>
+</div>
+<div class="stats">
+  <div class="stat"><span class="snum">7</span><span class="slbl">Fases</span></div>
+  <div class="stat"><span class="snum">4</span><span class="slbl">Actores</span></div>
+  <div class="stat"><span class="snum">11</span><span class="slbl">Puntos de dolor</span></div>
+  <div class="stat"><span class="snum">8</span><span class="slbl">Oportunidades</span></div>
+</div>
+<div class="tip" id="tipEl"><div class="tip-title">Detalle</div><div id="tipTxt"></div></div>
+<script>
+const sc = document.getElementById('starsEl');
+for (let i = 0; i < 55; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*60}%;animation-delay:${(Math.random()*4).toFixed(1)}s;animation-duration:${(2+Math.random()*3).toFixed(1)}s`;
+  sc.appendChild(s);
+}
+const tip = document.getElementById('tipEl');
+const tipTxt = document.getElementById('tipTxt');
+document.querySelectorAll('.cell[data-tip]').forEach(c => {
+  c.addEventListener('mouseenter', () => { tipTxt.textContent = c.dataset.tip; tip.classList.add('on'); });
+  c.addEventListener('mousemove', e => {
+    let x = e.clientX + 14, y = e.clientY - 38;
+    if (x + 220 > window.innerWidth) x = e.clientX - 224;
+    if (y < 0) y = 6;
+    tip.style.cssText += `left:${x}px;top:${y}px`;
+  });
+  c.addEventListener('mouseleave', () => tip.classList.remove('on'));
+});
+function setView(m) {
+  const g = document.getElementById('bpGrid');
+  g.classList.remove('mode-asis','mode-tobe');
+  ['vb','va','vt'].forEach(id => document.getElementById(id).classList.remove('active'));
+  if (m==='asis') { g.classList.add('mode-asis'); document.getElementById('va').classList.add('active'); }
+  else if (m==='tobe') { g.classList.add('mode-tobe'); document.getElementById('vt').classList.add('active'); }
+  else document.getElementById('vb').classList.add('active');
+}
+function setPhase(n) {
+  document.querySelectorAll('.phase-pill').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.querySelectorAll('[data-col],[data-ph]').forEach(el => {
+    const col = el.dataset.col || el.dataset.ph;
+    el.classList.toggle('hl', n > 0 && parseInt(col) === n);
+  });
+}
+</script>
+</body>
+</html>
