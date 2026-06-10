@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POSEIDÓN — Flujos de Usuario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0A1628; --navy2:#0F1F38; --gold:#C9A84C; --gold-s:#D9BC6E;
+  --paper:#F6F4EE; --card:#fff; --ink:#1D2735; --muted:#8B8F97;
+  --line:#E5E2DA; --brick:#A14434; --steel:#50708F;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--paper);font-family:'Inter',-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+/* ── STICKY NAV ── */
+#sitenav{
+  position:sticky;top:0;z-index:100;
+  background:var(--navy);
+  border-bottom:2px solid var(--gold);
+  display:flex;align-items:stretch;
+  box-shadow:0 2px 16px rgba(10,22,40,0.35);
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:0 24px;border-right:1px solid rgba(255,255,255,0.08);
+  white-space:nowrap;flex-shrink:0;
+}
+.nav-brand .emblem{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--gold);background:#152340;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gold);}
+.nav-brand .bname{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:#E9E4D6;letter-spacing:0.02em;}
+.nav-brand .bsub{font-size:9px;color:#6A7D94;letter-spacing:0.06em;text-transform:uppercase;}
+.nav-tabs{display:flex;align-items:stretch;flex:1;}
+.nav-tab{
+  flex:1;padding:14px 16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;border:none;background:transparent;
+  border-right:1px solid rgba(255,255,255,0.06);
+  transition:background 0.15s;
+  text-decoration:none;
+}
+.nav-tab:hover{background:rgba(255,255,255,0.05);}
+.nav-tab.active{background:rgba(201,168,76,0.13);border-bottom:2px solid var(--gold);margin-bottom:-2px;}
+.tab-num{font-size:9px;letter-spacing:0.18em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:2px;}
+.tab-lbl{font-size:11.5px;font-weight:600;color:#C8D0DC;}
+.nav-tab.active .tab-lbl{color:#F0EBE0;}
+
+/* ── FLOW SECTIONS ── */
+.flow-section{display:none;}
+.flow-section.active{display:block;}
+
+/* ── MASTHEAD ── */
+.masthead{background:var(--navy);padding:36px 48px 0;position:relative;overflow:hidden;}
+.masthead::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(201,168,76,0.06) 31px 32px);pointer-events:none;}
+.mast-inner{position:relative;display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:28px;}
+.mast-ey{font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:12px;}
+.mast-t{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:600;line-height:1.12;color:#F3EFE3;letter-spacing:-0.015em;}
+.mast-t em{font-style:normal;color:var(--gold-s);}
+.mast-m{margin-top:12px;font-size:11.5px;color:#97A0B0;letter-spacing:0.04em;}
+.mast-m .dot{color:var(--gold);margin:0 8px;}
+.mast-leg{text-align:right;font-size:11px;line-height:2.2;color:#97A0B0;white-space:nowrap;}
+.waterline{height:3px;background:linear-gradient(to right,var(--gold),rgba(201,168,76,0.15));}
+
+/* ── FLOW BODY ── */
+.flow-wrap{max-width:1280px;margin:0 auto;padding:52px 48px;}
+
+/* ── STEP ── */
+.step-hd{display:flex;align-items:flex-start;gap:18px;margin-bottom:26px;margin-top:52px;}
+.step-hd:first-child{margin-top:0;}
+.step-badge{font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);background:var(--navy);border-radius:4px;padding:5px 11px;white-space:nowrap;flex-shrink:0;margin-top:3px;}
+.step-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;color:var(--navy);letter-spacing:-0.01em;}
+.step-desc{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.65;}
+.step-body{display:grid;grid-template-columns:1fr 296px;gap:26px;align-items:start;}
+.divider{height:1px;background:var(--line);margin:48px 0;}
+
+/* ── POSEIDÓN SHELL ── */
+.pshell{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 28px rgba(10,22,40,0.13),0 1px 4px rgba(10,22,40,0.06);border:1px solid #D5DAE3;font-family:-apple-system,'Inter',sans-serif;}
+.govbar{background:#EBEBEB;border-bottom:1px solid #D5D5D5;padding:3px 14px;font-size:9px;color:#555;display:flex;justify-content:space-between;}
+.applayout{display:grid;grid-template-rows:46px 1fr;grid-template-columns:168px 1fr;min-height:460px;}
+.topbar{grid-column:1/-1;background:#fff;border-bottom:1px solid #E8ECF2;display:flex;align-items:center;padding:0 14px;gap:10px;}
+.tsearch{flex:1;background:#F4F6F9;border:1px solid #E4E8EF;border-radius:6px;padding:6px 10px;font-size:11.5px;color:#9AA0AC;display:flex;align-items:center;gap:6px;}
+.tright{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.bellw{position:relative;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.belld{position:absolute;top:0;right:0;background:#E53E3E;color:#fff;border-radius:50%;width:13px;height:13px;font-size:7px;display:flex;align-items:center;justify-content:center;font-weight:700;border:1.5px solid #fff;}
+.uavatar{width:28px;height:28px;border-radius:50%;background:#0A1628;color:#C9A84C;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.sidebar{background:#0A1628;border-right:1px solid rgba(255,255,255,0.06);padding:14px 0;display:flex;flex-direction:column;}
+.sblogo{display:flex;align-items:center;gap:9px;padding:0 13px 14px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:6px;}
+.sbemb{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:#152340;border:1.5px solid #C9A84C;display:flex;align-items:center;justify-content:center;font-size:13px;color:#C9A84C;}
+.sbn{font-size:12.5px;font-weight:700;color:#E9E4D6;letter-spacing:0.02em;line-height:1;}
+.sbs{font-size:8.5px;color:#6A7D94;margin-top:2px;letter-spacing:0.04em;}
+.sbnav{display:flex;align-items:center;gap:9px;padding:7px 13px;font-size:11.5px;color:#7D90A5;cursor:pointer;}
+.sbnav.act{background:rgba(201,168,76,0.11);color:#E0D9C8;}
+.sbnav.act .ni{color:#C9A84C;}
+.ni{font-size:12px;width:15px;text-align:center;flex-shrink:0;}
+.sbsep{height:1px;background:rgba(255,255,255,0.06);margin:7px 0;}
+.sbbot{margin-top:auto;border-top:1px solid rgba(255,255,255,0.06);padding-top:6px;}
+.main{background:#F3F5F8;padding:18px;overflow:hidden;}
+.pgt{font-size:17px;font-weight:700;color:#1C2733;letter-spacing:-0.01em;}
+.pgs{font-size:10.5px;color:#8B8F97;margin-top:2px;}
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.kpi{background:#fff;border-radius:8px;padding:14px;border:1px solid #E4E8EF;}
+.kpi-icon{font-size:18px;margin-bottom:8px;}
+.kpi-val{font-size:22px;font-weight:700;color:#1C2733;letter-spacing:-0.02em;}
+.kpi-lbl{font-size:10px;color:#8B8F97;margin-top:2px;}
+.kpi-chg{font-size:9.5px;color:#16A34A;margin-top:3px;font-weight:500;}
+.kpi-chg.warn{color:#DC2626;}
+
+/* Quick actions */
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.qa{background:#fff;border-radius:7px;padding:10px 12px;border:1px solid #E4E8EF;cursor:pointer;}
+.qa-t{font-size:11px;font-weight:600;color:#1C2733;margin-bottom:2px;}
+.qa-s{font-size:9.5px;color:#8B8F97;}
+
+/* Two-col dashboard */
+.dash-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.dcard{background:#fff;border-radius:7px;border:1px solid #E4E8EF;overflow:hidden;}
+.dcard-h{padding:10px 12px;border-bottom:1px solid #F0F2F5;font-size:11.5px;font-weight:600;color:#1C2733;display:flex;justify-content:space-between;align-items:center;}
+.dcard-h a{font-size:10px;color:#2563EB;font-weight:400;}
+.drow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #F8F9FB;font-size:11px;}
+.drow:last-child{border-bottom:none;}
+.drow-ic{width:24px;height:24px;border-radius:50%;background:#F4F6F9;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.drow-main{flex:1;}
+.drow-name{font-weight:600;color:#1C2733;}
+.drow-sub{font-size:9.5px;color:#8B8F97;margin-top:1px;}
+.drow-time{font-size:10px;color:#8B8F97;white-space:nowrap;}
+.drow-days{padding:2px 8px;border-radius:10px;font-size:9.5px;font-weight:700;white-space:nowrap;}
+.days-red{background:#FEF2F2;color:#DC2626;}
+.days-amb{background:#FFFBEB;color:#92400E;}
+.days-ok{background:#F0FFF4;color:#166534;}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap;}
+.badge::before{content:"•";font-size:8px;}
+.bg-green{background:#ECFDF5;color:#166534;}
+.bg-red{background:#FEF2F2;color:#991B1B;}
+.bg-amber{background:#FFFBEB;color:#92400E;}
+.bg-blue{background:#EFF6FF;color:#1D4ED8;}
+.bg-gray{background:#F0FFF4;color:#276749;}
+.bg-slate{background:#F1F5F9;color:#475569;}
+
+/* Search */
+.csearch{background:#fff;border:1px solid #E4E8EF;border-radius:6px;padding:7px 11px;font-size:11.5px;color:#9AA0AC;display:flex;align-items:center;gap:7px;margin:12px 0 6px;}
+.csearch.focus{border-color:#2563EB;box-shadow:0 0 0 2px rgba(37,99,235,0.1);}
+.rct{font-size:10.5px;color:#8B8F97;margin-bottom:12px;font-family:monospace;}
+
+/* Filter tabs */
+.filters{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap;}
+.filt{padding:4px 10px;border-radius:10px;font-size:10.5px;font-weight:500;cursor:pointer;border:1px solid #E4E8EF;background:#fff;color:#6B7280;}
+.filt.act{background:#1C2733;color:#fff;border-color:#1C2733;}
+.filt.reg{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE;}
+
+/* Table */
+.dtable{width:100%;background:#fff;border-radius:7px;border:1px solid #E4E8EF;overflow:hidden;font-size:11px;margin-bottom:12px;}
+.dtable th{background:#F7F8FA;padding:7px 11px;text-align:left;font-size:9.5px;letter-spacing:0.07em;text-transform:uppercase;color:#9AA0AC;font-weight:600;border-bottom:1px solid #E4E8EF;}
+.dtable td{padding:9px 11px;border-bottom:1px solid #F0F2F5;color:#1C2733;vertical-align:middle;}
+.dtable tr:last-child td{border-bottom:none;}
+.rlnk{color:#2563EB;font-weight:600;}
+.tbold{font-weight:600;}
+.tmuted{color:#9AA0AC;}
+
+/* Search result categories */
+.sr-cat{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#8B8F97;font-weight:600;padding:8px 11px;background:#F7F8FA;border-bottom:1px solid #E4E8EF;}
+
+/* Profile */
+.pgback{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
+.pgh{font-size:19px;font-weight:700;color:#1C2733;display:flex;align-items:center;gap:8px;letter-spacing:-0.01em;}
+.pgsh{font-size:11px;color:#8B8F97;margin-top:2px;}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.icard{background:#fff;border-radius:7px;padding:14px;border:1px solid #E4E8EF;}
+.ict{font-size:11.5px;font-weight:600;color:#1C2733;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.irow{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:11px;color:#444;}
+.iic{color:#9AA0AC;width:13px;flex-shrink:0;margin-top:1px;}
+.idg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.idl{font-size:8.5px;letter-spacing:0.09em;text-transform:uppercase;color:#9AA0AC;font-weight:600;margin-bottom:3px;}
+.idv{font-size:11.5px;font-weight:600;color:#1C2733;}
+.idv.mono{font-family:monospace;font-size:10.5px;}
+.idv.lg{font-size:20px;}
+.tabs{display:flex;border-bottom:1px solid #E4E8EF;margin-bottom:14px;}
+.tab{padding:7px 14px;font-size:11.5px;color:#9AA0AC;cursor:pointer;border-bottom:2px solid transparent;}
+.tab.act{color:#2563EB;border-bottom-color:#2563EB;font-weight:600;}
+.sect{font-size:12px;font-weight:600;color:#1C2733;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+
+/* Embarcación detail actions */
+.act-panel{display:flex;flex-direction:column;gap:0;}
+.act-sec{font-size:10px;font-weight:700;color:#1C2733;margin:10px 0 6px;letter-spacing:0.04em;}
+.act-btn{display:block;width:100%;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-bottom:6px;border:1px solid transparent;text-align:left;}
+.abn{background:#0A1628;color:#fff;}
+.abb{background:#2563EB;color:#fff;}
+.abg{background:#D97706;color:#fff;}
+.abo{background:#fff;color:#1C2733;border-color:#D8DDE5;}
+.abr{background:#fff;color:#DC2626;border-color:#FECACA;}
+
+/* Estado expirado banner */
+.exp-banner{background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.exp-text{font-size:12px;font-weight:600;color:#991B1B;}
+.exp-sub{font-size:10.5px;color:#B91C1C;margin-top:1px;}
+
+/* License detail */
+.req-list{background:#fff;border-radius:7px;border:1px solid #E4E8EF;overflow:hidden;}
+.req-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid #F0F2F5;font-size:11.5px;}
+.req-row:last-child{border-bottom:none;}
+.req-done{color:#16A34A;font-weight:600;font-size:10.5px;}
+
+/* Duplicate form */
+.dup-form{background:#fff;border-radius:7px;border:1px solid #E4E8EF;padding:16px;}
+.form-row{margin-bottom:12px;}
+.form-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:5px;}
+.form-sel{width:100%;background:#F4F6F9;border:1px solid #E4E8EF;border-radius:6px;padding:7px 10px;font-size:11.5px;color:#1C2733;}
+.form-sub{width:100%;background:#0A1628;color:#fff;border:none;border-radius:6px;padding:9px;font-size:11.5px;font-weight:600;cursor:pointer;margin-top:4px;}
+
+/* ── ANNOTATION ── */
+.ann{background:var(--card);border-radius:8px;border:1px solid var(--line);padding:20px;position:sticky;top:72px;}
+.ann-ey{font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;}
+.ann-t{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--navy);margin-bottom:8px;line-height:1.35;}
+.ann-b{font-size:12px;line-height:1.68;color:#555;}
+.callout{display:flex;gap:8px;margin-top:11px;padding:9px 12px;border-radius:6px;font-size:11px;line-height:1.55;}
+.c-action{background:#EFF6FF;color:#1D4ED8;border-left:3px solid #2563EB;}
+.c-insight{background:rgba(201,168,76,0.09);color:var(--navy);border-left:3px solid var(--gold);}
+.c-future{background:#F0FFF4;color:#166534;border-left:3px solid #22C55E;}
+
+/* ── ESTADO FUTURO ── */
+.futuro{background:var(--navy);margin:64px -48px 0;padding:56px 48px;position:relative;overflow:hidden;}
+.futuro::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(201,168,76,0.05) 31px 32px);pointer-events:none;}
+.fut-in{position:relative;}
+.fut-ey{font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px;}
+.fut-t{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#F3EFE3;letter-spacing:-0.01em;margin-bottom:4px;}
+.fut-s{font-size:13px;color:#7A8FA5;margin-bottom:32px;}
+.fut-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.fc{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:18px;}
+.fc-mod{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-s);font-weight:700;margin-bottom:7px;}
+.fc-t{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:#F0EBE0;margin-bottom:12px;line-height:1.35;}
+.fr{display:grid;grid-template-columns:60px 1fr;gap:8px;margin-bottom:9px;font-size:11px;align-items:start;}
+.fl{color:var(--gold-s);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:0.05em;padding-top:1px;}
+.fv{color:#B0BDD0;line-height:1.5;}
+.fv.new{color:#86EFAC;}
+
+/* ── FOOTER ── */
+.colophon{display:flex;justify-content:space-between;padding:20px 48px;font-size:11px;color:var(--muted);letter-spacing:0.04em;border-top:1px solid var(--line);}
+.colophon b{color:var(--navy);font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- ════ STICKY NAV ════ -->
+<nav id="sitenav">
+  <div class="nav-brand">
+    <div class="emblem">⚓</div>
+    <div><div class="bname">POSEIDÓN</div><div class="bsub">Flujos de Usuario</div></div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showFlow('flow-1',this)">
+      <span class="tab-num">Flujo 01</span>
+      <span class="tab-lbl">Búsqueda Global</span>
+    </button>
+    <button class="nav-tab" onclick="showFlow('flow-2',this)">
+      <span class="tab-num">Flujo 02</span>
+      <span class="tab-lbl">Embarcaciones</span>
+    </button>
+    <button class="nav-tab" onclick="showFlow('flow-3',this)">
+      <span class="tab-num">Flujo 03</span>
+      <span class="tab-lbl">Propietarios</span>
+    </button>
+    <button class="nav-tab" onclick="showFlow('flow-4',this)">
+      <span class="tab-num">Flujo 04</span>
+      <span class="tab-lbl">Licencias Náuticas</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     FLUJO 01 — BÚSQUEDA GLOBAL
+════════════════════════════════════════ -->
+<section id="flow-1" class="flow-section active">
+<header class="masthead">
+  <div class="mast-inner">
+    <div>
+      <div class="mast-ey">POSEIDÓN · Flujos de Usuario</div>
+      <div class="mast-t">Flujo 01 — <em>Búsqueda Global</em></div>
+      <div class="mast-m">Dashboard<span class="dot">·</span>Búsqueda<span class="dot">·</span>Resultados<span class="dot">·</span>Perfil de Embarcación</div>
+    </div>
+    <div class="mast-leg">
+      <div><span style="color:var(--gold)">▸</span> Acción del oficial</div>
+      <div><span style="color:#8FAECB">◆</span> Hallazgo del sistema</div>
+      <div><span style="color:#86EFAC">✦</span> Estado futuro</div>
+    </div>
+  </div>
+  <div class="waterline"></div>
+</header>
+
+<div class="flow-wrap">
+
+<!-- PASO 01 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 01</div>
+  <div><div class="step-title">Panel de Control (Dashboard)</div>
+  <div class="step-desc">El oficial inicia sesión. El Dashboard muestra el estado general del sistema: embarcaciones activas, propietarios, transacciones del mes y renovaciones pendientes.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav act"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+          <div><div class="pgt">Panel de Control</div><div class="pgs">Bienvenido al Sistema POSEIDÓN</div></div>
+          <div style="font-size:10px;color:#8B8F97">Última actualización: Hoy, 09:58 a.m.</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-icon">⛵</div><div class="kpi-val">12,847</div><div class="kpi-lbl">Embarcaciones Activas</div><div class="kpi-chg">↑ +2.5%</div></div>
+          <div class="kpi"><div class="kpi-icon">👥</div><div class="kpi-val">8,234</div><div class="kpi-lbl">Propietarios Registrados</div><div class="kpi-chg">↑ +1.8%</div></div>
+          <div class="kpi"><div class="kpi-icon">📋</div><div class="kpi-val">1,429</div><div class="kpi-lbl">Transacciones este Mes</div><div class="kpi-chg">↑ +12.3%</div></div>
+          <div class="kpi"><div class="kpi-icon">⚠</div><div class="kpi-val">342</div><div class="kpi-lbl">Renovaciones Pendientes</div><div class="kpi-chg warn">Requieren atención</div></div>
+        </div>
+        <div class="qa-grid">
+          <div class="qa"><div class="qa-t">+ Nueva Inscripción</div><div class="qa-s">Registrar nueva embarcación</div></div>
+          <div class="qa"><div class="qa-t">↻ Renovar Registro</div><div class="qa-s">Buscar embarcación</div></div>
+          <div class="qa"><div class="qa-t">⇄ Transferir Propiedad</div><div class="qa-s">Buscar embarcación</div></div>
+          <div class="qa"><div class="qa-t">📋 Nueva Licencia</div><div class="qa-s">Emitir licencia náutica</div></div>
+        </div>
+        <div class="dash-cols">
+          <div class="dcard">
+            <div class="dcard-h">Transacciones Recientes <a href="#">Ver todas →</a></div>
+            <div class="drow"><div class="drow-ic">✓</div><div class="drow-main"><div class="drow-name">Sea Spirit <span class="badge bg-blue" style="font-size:9px">Inscripción</span></div><div class="drow-sub">PR-28451 · TRX-2024-0892</div></div><div class="drow-time">Hace 2h</div></div>
+            <div class="drow"><div class="drow-ic">↻</div><div class="drow-main"><div class="drow-name">Blue Wave <span class="badge bg-green" style="font-size:9px">Renovación</span></div><div class="drow-sub">PR-15782 · TRX-2024-0891</div></div><div class="drow-time">Hace 3h</div></div>
+            <div class="drow"><div class="drow-ic">⇄</div><div class="drow-main"><div class="drow-name">Marina Star <span class="badge bg-amber" style="font-size:9px">Transferencia</span></div><div class="drow-sub">PR-32189 · TRX-2024-0890</div></div><div class="drow-time">Hace 5h</div></div>
+          </div>
+          <div class="dcard">
+            <div class="dcard-h">Registros por Vencer <a href="#">Ver todos →</a></div>
+            <div class="drow"><div class="drow-main"><div class="drow-name">Sunset Cruiser</div><div class="drow-sub">PR-18293 · Carlos Martinez</div></div><div class="drow-days days-red">5 días</div></div>
+            <div class="drow"><div class="drow-main"><div class="drow-name">Island Hopper</div><div class="drow-sub">PR-27384 · Ana Garcia</div></div><div class="drow-days days-amb">7 días</div></div>
+            <div class="drow"><div class="drow-main"><div class="drow-name">Trade Wind</div><div class="drow-sub">PR-09182 · Juan Rodriguez</div></div><div class="drow-days days-amb">12 días</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 01 · Contexto</div>
+    <div class="ann-t">El oficial llega al Dashboard y evalúa el estado del sistema</div>
+    <div class="ann-b">El Panel de Control muestra KPIs en tiempo real. El oficial nota <strong>342 Renovaciones Pendientes</strong> y decide buscar una embarcación específica.</div>
+    <div class="callout c-insight">◆ El Dashboard es nuevo en POSEIDÓN — Neptuno no tiene vista consolidada del estado del sistema.</div>
+    <div class="callout c-action">▸ El oficial hace clic en <strong>Búsqueda Global</strong> en el menú lateral.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 02 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 02</div>
+  <div><div class="step-title">Búsqueda Global — Estado Inicial</div>
+  <div class="step-desc">El módulo de Búsqueda Global permite al oficial buscar por nombre, número de registro, HIN, SSN o número de licencia desde una sola pantalla.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav act"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:24px;">
+        <div style="width:100%;max-width:700px;">
+          <div class="pgt" style="margin-bottom:4px">Búsqueda Global</div>
+          <div class="pgs" style="margin-bottom:16px">Buscar embarcaciones, propietarios, licencias y transacciones</div>
+          <div class="csearch focus" style="font-size:13px;padding:10px 14px;border-radius:8px;">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#2563EB" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span style="color:#1C2733">Buscar por nombre, número de registro, HIN, SSN, licencia...</span>
+          </div>
+          <div style="margin-top:80px;text-align:center;">
+            <svg width="48" height="48" viewBox="0 0 16 16" fill="none" style="opacity:0.25;margin:0 auto"><circle cx="6.5" cy="6.5" r="5" stroke="#1C2733" stroke-width="1.2"/><path d="m10 10 3.5 3.5" stroke="#1C2733" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <div style="font-size:13px;font-weight:600;color:#1C2733;margin-top:12px">Ingrese un término de búsqueda</div>
+            <div style="font-size:11px;color:#8B8F97;margin-top:6px">Puede buscar por nombre, número de registro, HIN, SSN, número de licencia, y más</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 02 · Sistema</div>
+    <div class="ann-t">Búsqueda Global — capacidad completamente nueva</div>
+    <div class="ann-b">En Neptuno <strong>no existe búsqueda global</strong>. Los oficiales no podían buscar por nombre, número de registro ni SSN desde una sola pantalla.</div>
+    <div class="callout c-insight">◆ Iris confirmó en sesión: <em>"There is no global search. There is nothing like that."</em></div>
+    <div class="callout c-action">▸ El oficial escribe <strong>"Mar Caribe"</strong> y presiona Enter.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 03 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 03</div>
+  <div><div class="step-title">Resultados de Búsqueda</div>
+  <div class="step-desc">El sistema devuelve resultados agrupados por categoría: embarcaciones, propietarios y licencias que coinciden con el término buscado.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav act"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgt" style="margin-bottom:4px">Búsqueda Global</div>
+        <div class="pgs" style="margin-bottom:10px">Buscar embarcaciones, propietarios, licencias y transacciones</div>
+        <div class="csearch focus" style="margin-bottom:10px">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#2563EB" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="color:#1C2733;font-weight:500">Mar Caribe</span>
+        </div>
+        <div class="rct">3 resultados encontrados para "Mar Caribe"</div>
+        <div class="dtable">
+          <div class="sr-cat">⛵ Embarcaciones (2)</div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr><th style="background:#F7F8FA;padding:6px 11px;text-align:left;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:#9AA0AC;border-bottom:1px solid #E4E8EF">Reg #</th><th style="background:#F7F8FA;padding:6px 11px;text-align:left;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:#9AA0AC;border-bottom:1px solid #E4E8EF">Nombre</th><th style="background:#F7F8FA;padding:6px 11px;text-align:left;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:#9AA0AC;border-bottom:1px solid #E4E8EF">Propietario</th><th style="background:#F7F8FA;padding:6px 11px;text-align:left;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:#9AA0AC;border-bottom:1px solid #E4E8EF">Estado</th></tr></thead>
+            <tbody>
+              <tr style="cursor:pointer;background:rgba(37,99,235,0.03)">
+                <td style="padding:8px 11px;font-size:11px;border-bottom:1px solid #F0F2F5"><span class="rlnk">PR-2024-00147</span></td>
+                <td style="padding:8px 11px;font-size:11px;font-weight:600;border-bottom:1px solid #F0F2F5">Mar Caribe III</td>
+                <td style="padding:8px 11px;font-size:11px;border-bottom:1px solid #F0F2F5">Carlos M. Rivera</td>
+                <td style="padding:8px 11px;font-size:11px;border-bottom:1px solid #F0F2F5"><span class="badge bg-red">Expirado</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 11px;font-size:11px;border-bottom:1px solid #F0F2F5"><span class="rlnk">PR-2023-00522</span></td>
+                <td style="padding:8px 11px;font-size:11px;font-weight:600;border-bottom:1px solid #F0F2F5">Mar Caribe Sport</td>
+                <td style="padding:8px 11px;font-size:11px;border-bottom:1px solid #F0F2F5">Rafael A. Torres</td>
+                <td style="padding:8px 11px;font-size:11px;border-bottom:1px solid #F0F2F5"><span class="badge bg-green">Activo</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="sr-cat">👥 Propietarios (1)</div>
+          <table style="width:100%;border-collapse:collapse;">
+            <tbody>
+              <tr>
+                <td style="padding:8px 11px;font-size:11px"><span class="rlnk">OWN-001</span></td>
+                <td style="padding:8px 11px;font-size:11px;font-weight:600">Carlos M. Rivera</td>
+                <td style="padding:8px 11px;font-size:11px;color:#8B8F97">crivera@email.com</td>
+                <td style="padding:8px 11px;font-size:11px"><span class="badge bg-slate">1 embarcación</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 03 · Sistema</div>
+    <div class="ann-t">Resultados agrupados por tipo de registro</div>
+    <div class="ann-b">POSEIDÓN devuelve embarcaciones, propietarios y licencias en una sola búsqueda, agrupados por categoría para facilitar la identificación.</div>
+    <div class="callout c-insight">◆ El estado <strong>Expirado</strong> aparece en rojo inmediatamente en los resultados — sin necesidad de abrir el registro.</div>
+    <div class="callout c-action">▸ El oficial selecciona <strong>Mar Caribe III</strong> (PR-2024-00147) para ver el perfil completo.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 04 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 04</div>
+  <div><div class="step-title">Perfil de la Embarcación — Mar Caribe III</div>
+  <div class="step-desc">El sistema despliega el perfil completo de la embarcación: identidad, estado del registro, asignación y acciones disponibles según el estado actual.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav act"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main" style="display:grid;grid-template-columns:1fr 160px;gap:12px;overflow:hidden;">
+        <div>
+          <div class="pgback">
+            <span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+            <div><div class="pgh">Mar Caribe III <span class="badge bg-red">Expirado</span></div><div class="pgsh">PR-2024-00147 · HIN: USXYZ12345J324</div></div>
+          </div>
+          <div class="tabs">
+            <div class="tab act">Resumen</div><div class="tab">Propietarios</div><div class="tab">Historial</div><div class="tab">Documentos</div><div class="tab">Gravámenes</div>
+          </div>
+          <div class="twocol">
+            <div class="icard">
+              <div class="ict">⛵ Identidad de la Embarcación</div>
+              <div class="idg">
+                <div><div class="idl">Nombre</div><div class="idv">Mar Caribe III</div></div>
+                <div><div class="idl">HIN</div><div class="idv mono" style="font-size:9.5px">USXYZ12345J324</div></div>
+                <div style="margin-top:8px"><div class="idl">Tipo</div><div class="idv">Motor Yacht</div></div>
+                <div style="margin-top:8px"><div class="idl">Marca</div><div class="idv">Sea Ray</div></div>
+                <div style="margin-top:8px"><div class="idl">Año</div><div class="idv">2022</div></div>
+                <div style="margin-top:8px"><div class="idl">Material</div><div class="idv">Fiberglass</div></div>
+              </div>
+            </div>
+            <div class="icard">
+              <div class="ict">📊 Estado del Registro</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="badge bg-red">Expirado</span><span style="font-size:10.5px;color:#8B8F97">Venció 2025-06-30</span></div>
+              <div style="background:#FEF2F2;border-radius:6px;padding:10px;text-align:center;margin-bottom:10px">
+                <div style="font-size:9.5px;color:#B91C1C;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;margin-bottom:4px">Días Hasta el Vencimiento</div>
+                <div style="font-size:20px;font-weight:800;color:#DC2626;letter-spacing:-0.02em">EXPIRADO</div>
+              </div>
+              <div style="border-top:1px solid #F0F0F0;padding-top:10px">
+                <div class="idl" style="margin-bottom:4px">Asignación</div>
+                <div style="font-size:11px;color:#1C2733"><span style="font-weight:600">Metro</span> · Puerto San Juan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="act-panel">
+          <div class="act-sec">Acciones Principales</div>
+          <button class="act-btn abn">↻ Renovar Registro</button>
+          <button class="act-btn abb">⇄ Transferir Propiedad</button>
+          <button class="act-btn abg">+ Registrar Gravamen</button>
+          <button class="act-btn abo">🖨 Imprimir Certificado</button>
+          <div class="act-sec">Gestión del Registro</div>
+          <button class="act-btn abo">📋 Emitir Duplicado</button>
+          <button class="act-btn abo">✏ Cambio de Información</button>
+          <button class="act-btn abr">⚠ Reportar Hurto</button>
+          <button class="act-btn abr">✕ Procesar Baja</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 04 · Resultado</div>
+    <div class="ann-t">Perfil completo con acciones contextuales</div>
+    <div class="ann-b">El sistema muestra el estado Expirado con todas las acciones disponibles en el panel derecho. El oficial puede actuar directamente desde esta vista.</div>
+    <div class="callout c-insight">◆ Las acciones cambian según el estado — una embarcación Activa no muestra "Reactivar". El sistema guía al oficial.</div>
+    <div class="callout c-action">▸ El oficial selecciona <strong>Renovar Registro</strong> para iniciar el proceso de renovación.</div>
+  </div>
+</div>
+
+<!-- ESTADO FUTURO -->
+<div class="futuro">
+  <div class="fut-in">
+    <div class="fut-ey">Sesión con Iris &amp; Elid · Hallazgos</div>
+    <div class="fut-t">Estado Futuro — Búsqueda Global</div>
+    <div class="fut-s">Lo que existe hoy, lo que se solicitó, y por qué importa.</div>
+    <div class="fut-grid">
+      <div class="fc">
+        <div class="fc-mod">Búsqueda · Capacidad Nueva</div>
+        <div class="fc-t">Búsqueda global multi-campo — inexistente en Neptuno</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">En Neptuno no existe ningún tipo de búsqueda global. Los oficiales no pueden buscar por nombre, número de registro ni SSN.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Búsqueda por nombre, número de registro, HIN, SSN y número de licencia desde una sola pantalla.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">Iris confirmó en sesión: no hay ninguna búsqueda en el sistema actual. Esta es la mejora de impacto más alto para los oficiales de ventanilla.</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Dashboard · Vista Consolidada</div>
+        <div class="fc-t">Renovaciones pendientes por mes para proyección de carga</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">No existe vista consolidada. Los oficiales no saben cuántas renovaciones se aproximan ni cuándo.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Dashboard con renovaciones pendientes por mes y volumen total de transacciones.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">"Eso ayuda mucho con el período de octubre a septiembre para hacer ese framework de propuestas federales." — Iris</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Dashboard · Métricas Operacionales</div>
+        <div class="fc-t">Transacciones por región y por empleado</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">No existe visibilidad de rendimiento por región ni por oficial procesador.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Vista de transacciones por región y revenue por empleado en el Dashboard.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">Permite al comisionado monitorear productividad y distribuir carga de trabajo entre regiones.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /flow-wrap -->
+</section>
+<!-- END FLOW 1 -->
+
+<!-- ════════════════════════════════════════
+     FLUJO 02 — EMBARCACIONES (RENOVACIÓN)
+════════════════════════════════════════ -->
+<section id="flow-2" class="flow-section">
+<header class="masthead">
+  <div class="mast-inner">
+    <div>
+      <div class="mast-ey">POSEIDÓN · Flujos de Usuario</div>
+      <div class="mast-t">Flujo 02 — <em>Embarcaciones</em></div>
+      <div class="mast-m">Lista de Embarcaciones<span class="dot">·</span>Perfil<span class="dot">·</span>Renovación de Registro</div>
+    </div>
+    <div class="mast-leg">
+      <div><span style="color:var(--gold)">▸</span> Acción del oficial</div>
+      <div><span style="color:#8FAECB">◆</span> Hallazgo del sistema</div>
+      <div><span style="color:#86EFAC">✦</span> Estado futuro</div>
+    </div>
+  </div>
+  <div class="waterline"></div>
+</header>
+
+<div class="flow-wrap">
+
+<!-- PASO 01 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 01</div>
+  <div><div class="step-title">Registro de Embarcaciones</div>
+  <div class="step-desc">El oficial accede al módulo de Embarcaciones. La vista de lista muestra todas las embarcaciones con filtros por estado y región.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav act"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div><div class="pgt">Registro de Embarcaciones</div></div>
+          <button class="act-btn abn" style="width:auto;margin:0;padding:7px 14px">+ Nueva Inscripción</button>
+        </div>
+        <div class="csearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcaciones...</div>
+        <div class="filters">
+          <span class="filt act">Todos</span><span class="filt">Activo</span><span class="filt" style="background:#FEF2F2;color:#991B1B;border-color:#FECACA">Expirado</span><span class="filt">Suspendido</span><span class="filt">Pendiente</span>
+          <span style="margin-left:6px"></span>
+          <span class="filt reg act">Todas</span><span class="filt reg">Metro</span><span class="filt reg">Norte</span><span class="filt reg">Sur</span><span class="filt reg">Este</span><span class="filt reg">Oeste</span>
+        </div>
+        <div class="rct">8 embarcaciones encontradas</div>
+        <table class="dtable">
+          <thead><tr><th>Reg #</th><th>Nombre</th><th>HIN</th><th>Propietario</th><th>Estado</th><th>Vencimiento</th><th>Región</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rlnk">PR-2024-00147</span></td><td class="tbold">Mar Caribe III</td><td style="font-size:9.5px;font-family:monospace">USXYZ12345J324</td><td>Carlos M. Rivera</td><td><span class="badge bg-red">Expirado</span></td><td>2025-06-30</td><td>Metro</td></tr>
+            <tr><td><span class="rlnk">PR-2023-08831</span></td><td class="tbold">Isla Bonita</td><td style="font-size:9.5px;font-family:monospace">FLMW0234K920</td><td>María L. Santos Ortiz</td><td><span class="badge bg-red">Expirado</span></td><td>2024-12-31</td><td>Este</td></tr>
+            <tr><td><span class="rlnk">PR-2025-00012</span></td><td class="tbold">Boricua Star</td><td style="font-size:9.5px;font-family:monospace">NYMR8812M425</td><td>José A. Figueroa</td><td><span class="badge bg-green">Activo</span></td><td>2026-03-15</td><td>Oeste</td></tr>
+            <tr><td><span class="rlnk">PR-2024-04419</span></td><td class="tbold">Ola Serena</td><td style="font-size:9.5px;font-family:monospace">TXAB5501L823</td><td>Ana R. Méndez Cruz</td><td><span class="badge bg-amber">Suspendido</span></td><td>2025-09-15</td><td>Sur</td></tr>
+            <tr><td><span class="rlnk">PR-2024-02773</span></td><td class="tbold">Tiburón Azul</td><td style="font-size:9.5px;font-family:monospace">FLZP098BJ721</td><td>Roberto E. Colón Vargas</td><td><span class="badge bg-green">Activo</span></td><td>2025-11-30</td><td>Norte</td></tr>
+            <tr><td><span class="rlnk">PR-2023-06542</span></td><td class="tbold">Sol del Mar</td><td style="font-size:9.5px;font-family:monospace">CALX3345H619</td><td>Luis F. Ortiz Pagan</td><td><span class="badge bg-blue">Pendiente</span></td><td>2025-04-01</td><td>Metro</td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#8B8F97;padding:0 2px">
+          <span>Página 1 de 1</span><span>Anterior · Siguiente</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 01 · Acción</div>
+    <div class="ann-t">Vista de lista con filtros por estado y región</div>
+    <div class="ann-b">El módulo muestra todas las embarcaciones con su estado en color. Los filtros permiten aislar Expirado o por región rápidamente.</div>
+    <div class="callout c-insight">◆ Los estados Expirado y Suspendido aparecen en rojo/ámbar — el oficial identifica casos urgentes sin leer cada fila.</div>
+    <div class="callout c-action">▸ El oficial hace clic en <strong>Mar Caribe III</strong> (PR-2024-00147) para iniciar la renovación.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 02 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 02</div>
+  <div><div class="step-title">Perfil de Embarcación — Estado Expirado</div>
+  <div class="step-desc">El sistema muestra el perfil completo de Mar Caribe III. El estado Expirado se presenta con un banner de alerta y habilita la acción Renovar Registro.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav act"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main" style="display:grid;grid-template-columns:1fr 160px;gap:12px">
+        <div>
+          <div class="pgback">
+            <span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+            <div><div class="pgh">Mar Caribe III <span class="badge bg-red">Expirado</span></div><div class="pgsh">PR-2024-00147 · HIN: USXYZ12345J324</div></div>
+          </div>
+          <div class="exp-banner">
+            <span style="font-size:18px">⚠</span>
+            <div><div class="exp-text">Registro vencido — Acción requerida</div><div class="exp-sub">Venció el 30 de junio de 2025. Esta embarcación no puede operar legalmente.</div></div>
+          </div>
+          <div class="tabs">
+            <div class="tab act">Resumen</div><div class="tab">Propietarios</div><div class="tab">Historial</div><div class="tab">Documentos</div><div class="tab">Gravámenes</div><div class="tab">Cumplimiento</div>
+          </div>
+          <div class="twocol">
+            <div class="icard">
+              <div class="ict">⛵ Identidad de la Embarcación</div>
+              <div class="idg">
+                <div><div class="idl">Nombre</div><div class="idv">Mar Caribe III</div></div>
+                <div><div class="idl">HIN</div><div class="idv mono" style="font-size:9.5px">USXYZ12345J324</div></div>
+                <div style="margin-top:8px"><div class="idl">Tipo</div><div class="idv">Motor Yacht</div></div>
+                <div style="margin-top:8px"><div class="idl">Marca</div><div class="idv">Sea Ray</div></div>
+                <div style="margin-top:8px"><div class="idl">Modelo</div><div class="idv">Sundancer 320</div></div>
+                <div style="margin-top:8px"><div class="idl">Año</div><div class="idv">2022</div></div>
+                <div style="margin-top:8px"><div class="idl">Eslora</div><div class="idv">32 ft</div></div>
+                <div style="margin-top:8px"><div class="idl">Color</div><div class="idv">White/Blue</div></div>
+              </div>
+            </div>
+            <div class="icard">
+              <div class="ict">📊 Estado del Registro</div>
+              <div style="background:#FEF2F2;border-radius:6px;padding:10px;text-align:center;margin-bottom:10px">
+                <div style="font-size:9px;color:#B91C1C;letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-bottom:4px">Días Hasta el Vencimiento</div>
+                <div style="font-size:18px;font-weight:800;color:#DC2626">EXPIRADO</div>
+              </div>
+              <div style="margin-top:8px;padding-top:8px;border-top:1px solid #F0F0F0">
+                <div class="idl" style="margin-bottom:4px">Resumen</div>
+                <div style="display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:3px"><span style="color:#8B8F97">Reg #</span><span style="font-weight:600">PR-2024-00147</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:3px"><span style="color:#8B8F97">Propietario</span><span style="font-weight:600">Carlos M. Rivera</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:3px"><span style="color:#8B8F97">Puerto</span><span style="font-weight:600">San Juan</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:10.5px"><span style="color:#8B8F97">Venció</span><span style="font-weight:600;color:#DC2626">2025-06-30</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="act-panel">
+          <div class="act-sec">Acciones Principales</div>
+          <button class="act-btn abn" style="background:#16A34A">↻ Renovar Registro</button>
+          <button class="act-btn abb">⇄ Transferir Propiedad</button>
+          <button class="act-btn abg">+ Registrar Gravamen</button>
+          <button class="act-btn abo">🖨 Imprimir Certificado</button>
+          <div class="act-sec">Gestión</div>
+          <button class="act-btn abo">📋 Emitir Duplicado</button>
+          <button class="act-btn abo">✏ Cambio de Información</button>
+          <button class="act-btn abr">⚠ Reportar Hurto</button>
+          <button class="act-btn abr">✕ Procesar Baja</button>
+          <button class="act-btn abo" style="border-color:#16A34A;color:#16A34A">↺ Reactivar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 02 · Sistema</div>
+    <div class="ann-t">El estado Expirado activa el banner de alerta y el botón Renovar</div>
+    <div class="ann-b">POSEIDÓN muestra un banner rojo con el motivo de expiración y resalta la acción <strong>Renovar Registro</strong> en verde — la acción correcta queda obvia.</div>
+    <div class="callout c-action">▸ El oficial hace clic en <strong>Renovar Registro</strong>.</div>
+    <div class="callout c-insight">◆ Las acciones destructivas (Baja, Hurto) están separadas visualmente y requieren confirmación adicional.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 03 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 03</div>
+  <div><div class="step-title">Confirmación de Renovación</div>
+  <div class="step-desc">El sistema presenta el resumen de la renovación: periodo cubierto, monto, y documentos requeridos. El oficial confirma y procesa el pago.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav act"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgback">
+          <span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+          <div><div class="pgh">Renovar Registro</div><div class="pgsh">Mar Caribe III · PR-2024-00147</div></div>
+        </div>
+        <div class="twocol">
+          <div class="icard">
+            <div class="ict">📋 Resumen de Renovación</div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #F0F0F0">
+              <span style="color:#8B8F97">Embarcación</span><span style="font-weight:600">Mar Caribe III</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:8px">
+              <span style="color:#8B8F97">Propietario</span><span style="font-weight:600">Carlos M. Rivera</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:8px">
+              <span style="color:#8B8F97">Período anterior</span><span>2024-07-01 — 2025-06-30</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:8px">
+              <span style="color:#8B8F97">Nuevo período</span><span style="font-weight:600;color:#16A34A">2025-07-01 — 2026-06-30</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid #F0F0F0">
+              <span>Total a pagar</span><span style="color:#0A1628">$75.00</span>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ict">✓ Documentos Requeridos</div>
+            <div class="req-list">
+              <div class="req-row">Prueba de Seguro <span class="req-done">✓ Completado</span></div>
+              <div class="req-row">Inspección Vigente <span class="req-done">✓ Completado</span></div>
+              <div class="req-row">Pago de Multas Pendientes <span class="req-done">✓ Ninguna</span></div>
+            </div>
+            <div style="margin-top:12px">
+              <div class="form-lbl" style="margin-bottom:6px">Método de Pago</div>
+              <div class="form-sel" style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#1C2733">💳 Efectivo en ventanilla</div>
+            </div>
+            <button class="form-sub" style="margin-top:12px;background:#16A34A">✓ Confirmar Renovación</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 03 · Confirmación</div>
+    <div class="ann-t">El sistema valida requisitos y calcula el monto automáticamente</div>
+    <div class="ann-b">POSEIDÓN verifica documentos requeridos, calcula el arancel y presenta un resumen antes de confirmar. No hay ambigüedad sobre lo que se está procesando.</div>
+    <div class="callout c-future">✦ Estado futuro: módulo de Multas solicitado — actualmente pendiente de implementación. Iris lo mencionó explícitamente en sesión.</div>
+    <div class="callout c-action">▸ El oficial confirma. El sistema genera el nuevo marbete y actualiza el registro.</div>
+  </div>
+</div>
+
+<!-- ESTADO FUTURO -->
+<div class="futuro">
+  <div class="fut-in">
+    <div class="fut-ey">Sesión con Iris &amp; Elid · Hallazgos</div>
+    <div class="fut-t">Estado Futuro — Embarcaciones</div>
+    <div class="fut-s">Lo que existe hoy, lo que se solicitó, y por qué importa.</div>
+    <div class="fut-grid">
+      <div class="fc">
+        <div class="fc-mod">Embarcaciones · Módulo Faltante</div>
+        <div class="fc-t">Módulo de Multas — explícitamente solicitado</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">No existe módulo de multas en el prototipo actual. Las multas se manejan fuera del sistema.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Módulo de Multas integrado al perfil de la embarcación y al proceso de renovación.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">"We need fines. We're missing the fines." — Iris. Sin este módulo el proceso de renovación queda incompleto.</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Embarcaciones · Motor</div>
+        <div class="fc-t">Módulo de motores vinculado a la embarcación</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">Los motores no tienen registro separado. Una embarcación puede tener 1, 2 o hasta 4 motores.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Módulo de motores con campos propios, vinculado al perfil de la embarcación.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">Facilita identificación en casos de hurto y transferencias donde el motor cambia de dueño independientemente del casco.</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Embarcaciones · Perfil</div>
+        <div class="fc-t">Vista adaptada para agentes de orden público</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">La pantalla de perfil individual es solo para oficiales de ventanilla.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">La misma pantalla adaptada para agentes en campo — permite emitir tickets con historial de paradas.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">"This same screen could be presented to public order agents to issue tickets with historical stop records." — Iris</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /flow-wrap -->
+</section>
+<!-- END FLOW 2 -->
+
+<!-- ════════════════════════════════════════
+     FLUJO 03 — PROPIETARIOS
+════════════════════════════════════════ -->
+<section id="flow-3" class="flow-section">
+<header class="masthead">
+  <div class="mast-inner">
+    <div>
+      <div class="mast-ey">POSEIDÓN · Flujos de Usuario</div>
+      <div class="mast-t">Flujo 03 — <em>Propietarios</em></div>
+      <div class="mast-m">Registro de Propietarios<span class="dot">·</span>Perfil<span class="dot">·</span>Historial de Embarcaciones</div>
+    </div>
+    <div class="mast-leg">
+      <div><span style="color:var(--gold)">▸</span> Acción del oficial</div>
+      <div><span style="color:#8FAECB">◆</span> Hallazgo del sistema</div>
+      <div><span style="color:#86EFAC">✦</span> Estado futuro</div>
+    </div>
+  </div>
+  <div class="waterline"></div>
+</header>
+
+<div class="flow-wrap">
+
+<!-- PASO 01 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 01</div>
+  <div><div class="step-title">Registro de Propietarios</div>
+  <div class="step-desc">El oficial accede al módulo de Propietarios. El sistema carga automáticamente todos los propietarios registrados en formato de tarjetas navegables.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav act"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgt">Registro de Propietarios</div>
+        <div class="pgs" style="margin-bottom:12px">Buscar y administrar propietarios de embarcaciones</div>
+        <div class="csearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar por nombre, SSN, teléfono o correo...</div>
+        <div class="rct">5 propietarios encontrados</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <div style="background:#fff;border-radius:7px;padding:12px;border:1px solid #E4E8EF">
+            <div style="display:flex;justify-content:space-between;margin-bottom:9px"><div><div style="font-size:12px;font-weight:600;color:#1C2733">Carlos M. Rivera</div><div style="font-size:9.5px;color:#8B8F97">OWN-001</div></div><span style="font-size:9.5px;background:#F0F3F7;color:#50708F;padding:2px 7px;border-radius:10px;font-weight:500;align-self:flex-start">Individual</span></div>
+            <div style="font-size:10.5px;color:#555;margin:2px 0">📞 (787) 555-0147</div><div style="font-size:10.5px;color:#555">✉ crivera@email.com</div>
+            <div style="display:flex;justify-content:space-between;margin-top:9px;padding-top:7px;border-top:1px solid #F0F0F0;font-size:10px"><span style="color:#9AA0AC;font-family:monospace">SSN: XXX-XX-4521</span><span style="color:#50708F;font-weight:500">1 embarcación</span></div>
+          </div>
+          <div style="background:#fff;border-radius:7px;padding:12px;border:1px solid #E4E8EF">
+            <div style="display:flex;justify-content:space-between;margin-bottom:9px"><div><div style="font-size:12px;font-weight:600;color:#1C2733">María L. Santos Ortiz</div><div style="font-size:9.5px;color:#8B8F97">OWN-002</div></div><span style="font-size:9.5px;background:#F0F3F7;color:#50708F;padding:2px 7px;border-radius:10px;font-weight:500;align-self:flex-start">Individual</span></div>
+            <div style="font-size:10.5px;color:#555;margin:2px 0">📞 (787) 555-0283</div><div style="font-size:10.5px;color:#555">✉ msantos@email.com</div>
+            <div style="display:flex;justify-content:space-between;margin-top:9px;padding-top:7px;border-top:1px solid #F0F0F0;font-size:10px"><span style="color:#9AA0AC;font-family:monospace">SSN: XXX-XX-7834</span><span style="color:#50708F;font-weight:500">1 embarcación</span></div>
+          </div>
+          <div style="background:#fff;border-radius:7px;padding:12px;border:1px solid #C9A84C;box-shadow:0 0 0 2px rgba(201,168,76,0.2)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:9px"><div><div style="font-size:12px;font-weight:600;color:#1C2733">José A. Figueroa</div><div style="font-size:9.5px;color:#8B8F97">OWN-003</div></div><span style="font-size:9.5px;background:#F0F3F7;color:#50708F;padding:2px 7px;border-radius:10px;font-weight:500;align-self:flex-start">Individual</span></div>
+            <div style="font-size:10.5px;color:#555;margin:2px 0">📞 (787) 555-0391</div><div style="font-size:10.5px;color:#555">✉ jfigueroa@email.com</div>
+            <div style="display:flex;justify-content:space-between;margin-top:9px;padding-top:7px;border-top:1px solid #F0F0F0;font-size:10px"><span style="color:#9AA0AC;font-family:monospace">SSN: XXX-XX-1290</span><span style="color:#50708F;font-weight:500">1 embarcación</span></div>
+          </div>
+          <div style="background:#fff;border-radius:7px;padding:12px;border:1px solid #E4E8EF">
+            <div style="display:flex;justify-content:space-between;margin-bottom:9px"><div><div style="font-size:12px;font-weight:600;color:#1C2733">Ana R. Méndez Cruz</div><div style="font-size:9.5px;color:#8B8F97">OWN-004</div></div><span style="font-size:9.5px;background:#F0F3F7;color:#50708F;padding:2px 7px;border-radius:10px;font-weight:500;align-self:flex-start">Individual</span></div>
+            <div style="font-size:10.5px;color:#555;margin:2px 0">📞 (787) 555-0472</div><div style="font-size:10.5px;color:#555">✉ amendez@email.com</div>
+            <div style="display:flex;justify-content:space-between;margin-top:9px;padding-top:7px;border-top:1px solid #F0F0F0;font-size:10px"><span style="color:#9AA0AC;font-family:monospace">SSN: XXX-XX-5567</span><span style="color:#50708F;font-weight:500">1 embarcación</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 01 · Acción</div>
+    <div class="ann-t">El oficial abre el módulo de Propietarios</div>
+    <div class="ann-b">El sistema carga todos los propietarios como tarjetas. La búsqueda filtra por nombre, SSN, teléfono o correo.</div>
+    <div class="callout c-insight">◆ Búsqueda por SSN y teléfono — capacidad nueva en POSEIDÓN, inexistente en Neptuno.</div>
+    <div class="callout c-action">▸ El oficial localiza a <strong>José A. Figueroa</strong> (OWN-003) y hace clic en su tarjeta.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 02 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 02</div>
+  <div><div class="step-title">Perfil del Propietario</div>
+  <div class="step-desc">El sistema despliega el perfil completo: datos de contacto, identificación, embarcaciones registradas y estado de licencias — todo en una sola vista.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav act"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgback"><span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+          <div><div class="pgh">👥 José A. Figueroa</div><div class="pgsh">OWN-003 · Individual</div></div>
+        </div>
+        <div class="twocol">
+          <div class="icard">
+            <div class="ict">📋 Información de Contacto</div>
+            <div class="irow"><span class="iic">📞</span>(787) 555-0391</div>
+            <div class="irow"><span class="iic">✉</span>jfigueroa@email.com</div>
+            <div class="irow"><span class="iic">📍</span>789 Calle Marina, Mayagüez, PR 00680</div>
+            <div class="irow"><span class="iic">📅</span>Propietario desde 2020-01-10</div>
+          </div>
+          <div class="icard">
+            <div class="ict">🪪 Identificación</div>
+            <div class="idg">
+              <div><div class="idl">SSN Enmascarado</div><div class="idv mono">XXX-XX-1290</div></div>
+              <div><div class="idl">Tipo de Cuenta</div><div class="idv">Individual</div></div>
+              <div style="margin-top:10px"><div class="idl">Embarcaciones</div><div class="idv lg">1</div></div>
+              <div style="margin-top:10px"><div class="idl">Licencias Activas</div><div class="idv lg">0</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sect">⛵ Embarcaciones Registradas</div>
+        <table class="dtable">
+          <thead><tr><th>Reg #</th><th>Nombre</th><th>Tipo</th><th>Puerto</th><th>Estado</th><th>Vencimiento</th></tr></thead>
+          <tbody><tr><td><span class="rlnk">PR-2025-00012</span></td><td class="tbold">Boricua Star</td><td>Center Console</td><td>Mayagüez</td><td><span class="badge bg-green">Activo</span></td><td>2026-03-15</td></tr></tbody>
+        </table>
+        <div class="sect">📋 Licencias</div>
+        <table class="dtable">
+          <thead><tr><th>Licencia #</th><th>Tipo</th><th>Categoría</th><th>Estado</th><th>Vencimiento</th></tr></thead>
+          <tbody><tr><td><span class="rlnk">NAU-2022-00891</span></td><td>Capitán</td><td>Master — Inland</td><td><span class="badge bg-red">Expirado</span></td><td>2025-03-10</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 02 · Sistema</div>
+    <div class="ann-t">Perfil consolidado — todo en una vista</div>
+    <div class="ann-b">Contacto, identificación, embarcaciones y licencias sin cambiar de pantalla. El estado en color es inmediato.</div>
+    <div class="callout c-insight">◆ La licencia <strong>NAU-2022-00891</strong> aparece en rojo — expiró el 2025-03-10. No requiere búsqueda separada.</div>
+    <div class="callout c-action">▸ El oficial hace clic en <strong>PR-2025-00012</strong> (Boricua Star) para ver el historial de propietarios.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 03 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 03</div>
+  <div><div class="step-title">Historial de Propietarios de la Embarcación</div>
+  <div class="step-desc">Desde el perfil del propietario, el oficial accede a la embarcación y ve el historial completo de traspasos con fechas de transacción y municipio de cada dueño.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav act"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgback"><span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+          <div><div class="pgh">Boricua Star <span class="badge bg-green" style="font-size:11px">Activo</span></div><div class="pgsh">PR-2025-00012 · HIN: NYMR8812M425</div></div>
+        </div>
+        <div class="tabs"><div class="tab">Resumen</div><div class="tab act">Propietarios</div><div class="tab">Historial</div><div class="tab">Documentos</div><div class="tab">Gravámenes</div></div>
+        <div class="twocol" style="margin-bottom:14px">
+          <div class="icard">
+            <div class="ict">⛵ Identidad</div>
+            <div class="idg">
+              <div><div class="idl">Nombre</div><div class="idv">Boricua Star</div></div>
+              <div><div class="idl">Tipo</div><div class="idv">Center Console</div></div>
+              <div style="margin-top:8px"><div class="idl">Año</div><div class="idv">2023</div></div>
+              <div style="margin-top:8px"><div class="idl">Región</div><div class="idv">Oeste</div></div>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ict">📍 Asignación</div>
+            <div class="idg">
+              <div><div class="idl">Puerto</div><div class="idv">Mayagüez</div></div>
+              <div><div class="idl">Región</div><div class="idv">Oeste</div></div>
+            </div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid #F0F0F0">
+              <div class="idl" style="margin-bottom:4px">Propietario Actual</div>
+              <div style="font-size:12px;font-weight:600;color:#1C2733">José A. Figueroa</div>
+              <div style="font-size:10.5px;color:#8B8F97;margin-top:2px">Desde 2025-01-20 · Mayagüez</div>
+            </div>
+          </div>
+        </div>
+        <div class="sect">👥 Historial de Propietarios</div>
+        <table class="dtable">
+          <thead><tr><th>Propietario</th><th>Municipio</th><th>Fecha Desde</th><th>Fecha Hasta</th><th>Tipo Transacción</th></tr></thead>
+          <tbody>
+            <tr><td class="tbold">José A. Figueroa</td><td>Mayagüez</td><td>2025-01-20</td><td class="tmuted">— (actual)</td><td><span class="badge bg-blue">Transferencia</span></td></tr>
+            <tr><td class="tbold">Roberto E. Colón Vargas</td><td>Ponce</td><td>2023-06-15</td><td>2025-01-19</td><td><span class="badge bg-gray">Propietario original</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 03 · Sistema</div>
+    <div class="ann-t">Historial completo con fechas y municipio</div>
+    <div class="ann-b">La pestaña Propietarios muestra cada traspaso con fecha exacta y el municipio de cada dueño — resuelve la ambigüedad de nombres repetidos.</div>
+    <div class="callout c-insight">◆ Municipio resuelve el problema de "Carlos Rivera": hay muchos en el sistema. El municipio identifica al correcto sin exponer datos sensibles.</div>
+    <div class="callout c-future">✦ Estado futuro: esto fue explícitamente solicitado por Iris en la sesión del prototipo.</div>
+  </div>
+</div>
+
+<!-- ESTADO FUTURO -->
+<div class="futuro">
+  <div class="fut-in">
+    <div class="fut-ey">Sesión con Iris &amp; Elid · Hallazgos</div>
+    <div class="fut-t">Estado Futuro — Propietarios &amp; Embarcaciones</div>
+    <div class="fut-s">Lo que existe hoy, lo que se solicitó, y por qué importa.</div>
+    <div class="fut-grid">
+      <div class="fc">
+        <div class="fc-mod">Propietarios · Historial</div>
+        <div class="fc-t">Fechas de transacción en historial de propietarios</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">El perfil muestra el propietario actual pero no el historial de traspasos ni las fechas.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Historial completo con fecha exacta de cada transferencia.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">Permite auditoría de traspasos y resolución de disputas sin buscar en múltiples transacciones.</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Propietarios · Identificación</div>
+        <div class="fc-t">Municipio del propietario para desambiguación</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">Solo nombre y SSN — muchos "Carlos Rivera" sin forma de distinguirlos rápido.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Incluir municipio en historial de traspasos y resultados de búsqueda.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">"There are so many Carlos Riveras." El municipio identifica a la persona sin revelar datos sensibles adicionales.</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Embarcaciones · Perfil</div>
+        <div class="fc-t">Campo de puerto / ubicación en el registro</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">El puerto no está vinculado al registro — complica transferencias y localización.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Campo de puerto/ubicación. No toda embarcación está en puerto (jet skis en casa), pero la ubicación es relevante.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">Al transferir, el puerto cambia. Sin este campo el registro queda desactualizado.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /flow-wrap -->
+</section>
+<!-- END FLOW 3 -->
+
+<!-- ════════════════════════════════════════
+     FLUJO 04 — LICENCIAS NÁUTICAS
+════════════════════════════════════════ -->
+<section id="flow-4" class="flow-section">
+<header class="masthead">
+  <div class="mast-inner">
+    <div>
+      <div class="mast-ey">POSEIDÓN · Flujos de Usuario</div>
+      <div class="mast-t">Flujo 04 — <em>Licencias Náuticas</em></div>
+      <div class="mast-m">Licencias Náuticas<span class="dot">·</span>Licencia de Capitán<span class="dot">·</span>Emitir Duplicado</div>
+    </div>
+    <div class="mast-leg">
+      <div><span style="color:var(--gold)">▸</span> Acción del oficial</div>
+      <div><span style="color:#8FAECB">◆</span> Hallazgo del sistema</div>
+      <div><span style="color:#86EFAC">✦</span> Estado futuro</div>
+    </div>
+  </div>
+  <div class="waterline"></div>
+</header>
+
+<div class="flow-wrap">
+
+<!-- PASO 01 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 01</div>
+  <div><div class="step-title">Módulo de Licencias Náuticas</div>
+  <div class="step-desc">El oficial accede al módulo de Licencias Náuticas. La vista muestra todas las licencias activas, expiradas y suspendidas con filtros por tipo y región.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav act"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgt" style="margin-bottom:10px">Licencias Náuticas</div>
+        <div class="csearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar por nombre, número de licencia, SSN...</div>
+        <div class="filters">
+          <span class="filt act">Todos</span><span class="filt">Activo</span><span class="filt" style="background:#FEF2F2;color:#991B1B;border-color:#FECACA">Expirado</span><span class="filt">Suspendido</span>
+          <span style="margin-left:6px"></span>
+          <span class="filt reg act">Capitán</span><span class="filt reg">Operador</span><span class="filt reg">Recreativo</span>
+        </div>
+        <div class="rct" style="margin-top:6px">4 licencias encontradas</div>
+        <table class="dtable">
+          <thead><tr><th>Licencia #</th><th>Tipo</th><th>Titular</th><th>Categoría</th><th>Región</th><th>Estado</th><th>Vencimiento</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rlnk">NAU-2024-00312</span></td><td>Capitán</td><td class="tbold">Carlos M. Rivera</td><td>Master — Near Coastal</td><td>Metro</td><td><span class="badge bg-green">Activo</span></td><td>2027-01-15</td></tr>
+            <tr><td><span class="rlnk">NAU-2023-00198</span></td><td>Capitán</td><td class="tbold">Ana R. Méndez Cruz</td><td>Master — Inland</td><td>Sur</td><td><span class="badge bg-green">Activo</span></td><td>2026-06-30</td></tr>
+            <tr><td><span class="rlnk">NAU-2022-00891</span></td><td>Capitán</td><td class="tbold">José A. Figueroa</td><td>Master — Inland</td><td>Oeste</td><td><span class="badge bg-red">Expirado</span></td><td>2025-03-10</td></tr>
+            <tr><td><span class="rlnk">NAU-2024-00445</span></td><td>Operador</td><td class="tbold">Luis F. Ortiz Pagan</td><td>Near Coastal</td><td>Norte</td><td><span class="badge bg-green">Activo</span></td><td>2026-11-15</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 01 · Acción</div>
+    <div class="ann-t">Vista de todas las licencias con estado en color</div>
+    <div class="ann-b">El módulo agrupa licencias por tipo (Capitán, Operador, Recreativo) y muestra el estado de cada una inmediatamente.</div>
+    <div class="callout c-insight">◆ Las licencias de Capitán son vitalicias — la transacción relevante es el <strong>Duplicado</strong>, no la renovación.</div>
+    <div class="callout c-action">▸ El oficial hace clic en <strong>NAU-2024-00312</strong> (Carlos M. Rivera) para ver el perfil.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 02 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 02</div>
+  <div><div class="step-title">Perfil — Licencia de Capitán</div>
+  <div class="step-desc">El sistema muestra el perfil completo de la licencia: detalles, titular, fecha de emisión, lista de requisitos completados y acciones disponibles.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav act"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main" style="display:grid;grid-template-columns:1fr 150px;gap:12px">
+        <div>
+          <div class="pgback"><span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+            <div><div class="pgh">Licencia de Capitán <span class="badge bg-green" style="font-size:11px">Activo</span></div><div class="pgsh">NAU-2024-00312</div></div>
+          </div>
+          <div class="twocol">
+            <div class="icard">
+              <div class="ict">📋 Detalles de la Licencia</div>
+              <div class="idg">
+                <div><div class="idl">Licencia #</div><div class="idv mono" style="font-size:10px">NAU-2024-00312</div></div>
+                <div><div class="idl">Tipo</div><div class="idv">Capitán</div></div>
+                <div style="margin-top:8px"><div class="idl">Categoría</div><div class="idv">Master — Near Coastal</div></div>
+                <div style="margin-top:8px"><div class="idl">Región</div><div class="idv">Metro</div></div>
+                <div style="margin-top:8px"><div class="idl">Fecha de Emisión</div><div class="idv">2024-01-15</div></div>
+                <div style="margin-top:8px"><div class="idl">Vencimiento</div><div class="idv">2027-01-15</div></div>
+                <div style="margin-top:8px"><div class="idl">Restricciones</div><div class="idv">None</div></div>
+              </div>
+            </div>
+            <div class="icard">
+              <div class="ict">👤 Titular de la Licencia</div>
+              <div class="idl" style="margin-bottom:3px">Nombre</div>
+              <div style="font-size:13px;font-weight:700;color:#1C2733;margin-bottom:10px">Carlos M. Rivera</div>
+              <div class="idg">
+                <div><div class="idl">SSN</div><div class="idv mono">XXX-XX-4521</div></div>
+                <div><div class="idl">Teléfono</div><div class="idv" style="font-size:10.5px">(787) 555-0147</div></div>
+              </div>
+              <div style="margin-top:10px;padding:8px 10px;background:#EFF6FF;border-radius:6px;font-size:10.5px;color:#1D4ED8;font-weight:500;cursor:pointer">Ver Perfil del Propietario →</div>
+              <div style="margin-top:10px">
+                <div class="idl" style="margin-bottom:4px">Días hasta vencimiento</div>
+                <div style="font-size:26px;font-weight:700;color:#1C2733;letter-spacing:-0.02em">232</div>
+              </div>
+            </div>
+          </div>
+          <div class="sect">✓ Lista de Requisitos</div>
+          <div class="req-list">
+            <div class="req-row">Examen Escrito<span class="req-done">✓ Completado</span></div>
+            <div class="req-row">Evaluación de Habilidades Prácticas<span class="req-done">✓ Completado</span></div>
+            <div class="req-row">Certificación de Primeros Auxilios / RCP<span class="req-done">✓ Completado</span></div>
+            <div class="req-row">Prueba de Drogas (Cumplimiento DOT)<span class="req-done">✓ Completado</span></div>
+            <div class="req-row">Certificado de Curso Náutico (Academia)<span class="req-done">✓ Completado</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="act-sec">Acciones</div>
+          <button class="act-btn abo">↻ Renovar Licencia</button>
+          <button class="act-btn abn">📋 Imprimir Licencia</button>
+          <button class="act-btn abr">⊘ Suspender Licencia</button>
+          <div style="margin-top:14px;padding:10px;background:#FFFBEB;border-radius:6px;border:1px solid #FDE68A">
+            <div style="font-size:9.5px;font-weight:700;color:#92400E;margin-bottom:4px">Nota del sistema</div>
+            <div style="font-size:10px;color:#78350F;line-height:1.5">La Licencia de Capitán es vitalicia. La transacción habitual es <strong>Emitir Duplicado</strong>, no Renovar.</div>
+          </div>
+          <button class="act-btn abb" style="margin-top:10px">📄 Emitir Duplicado</button>
+          <div style="margin-top:14px">
+            <div class="idl" style="margin-bottom:4px">Resumen</div>
+            <div style="font-size:10.5px;color:#1C2733;margin-bottom:3px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Titular</span><span style="font-weight:600">Carlos M. Rivera</span></div>
+            <div style="font-size:10.5px;color:#1C2733;margin-bottom:3px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Tipo</span><span>Capitán</span></div>
+            <div style="font-size:10.5px;color:#1C2733;margin-bottom:3px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Región</span><span>Metro</span></div>
+            <div style="font-size:10.5px;color:#1C2733;display:flex;justify-content:space-between"><span style="color:#8B8F97">Vence</span><span>2027-01-15</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 02 · Sistema</div>
+    <div class="ann-t">Licencia de Capitán — vitalicia, sin renovación</div>
+    <div class="ann-b">El perfil muestra todos los requisitos completados. El sistema advierte que la licencia de Capitán es vitalicia — la acción habitual es <strong>Emitir Duplicado</strong>.</div>
+    <div class="callout c-insight">◆ Iris confirmó en sesión: <em>"Renovar no aplica para esta licencia. Los duplicados son la transacción habitual."</em></div>
+    <div class="callout c-action">▸ El oficial hace clic en <strong>Emitir Duplicado</strong>.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 03 -->
+<div class="step-hd">
+  <div class="step-badge">Paso 03</div>
+  <div><div class="step-title">Emitir Duplicado de Licencia</div>
+  <div class="step-desc">El sistema presenta el formulario para emitir un duplicado: motivo, información del titular y confirmación del pago.</div></div>
+</div>
+<div class="step-body">
+  <div class="pshell">
+    <div class="govbar"><span>Estado Libre Asociado de Puerto Rico</span><span>Oficina del Comisionado de Navegación</span></div>
+    <div class="applayout">
+      <div class="topbar">
+        <div class="tsearch"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#9AA0AC" stroke-width="1.5"/><path d="m10 10 3.5 3.5" stroke="#9AA0AC" stroke-width="1.5" stroke-linecap="round"/></svg>Buscar embarcación, propietario, transacción...</div>
+        <div class="tright"><div class="bellw">🔔<div class="belld">3</div></div><div class="uavatar">MR</div></div>
+      </div>
+      <div class="sidebar">
+        <div class="sblogo"><div class="sbemb">⚓</div><div><div class="sbn">POSEIDÓN</div><div class="sbs">Sistema de Registro</div></div></div>
+        <div class="sbnav"><span class="ni">⊞</span>Dashboard</div>
+        <div class="sbnav"><span class="ni">⌕</span>Búsqueda Global</div>
+        <div class="sbnav"><span class="ni">⛵</span>Embarcaciones</div>
+        <div class="sbnav"><span class="ni">👥</span>Propietarios</div>
+        <div class="sbnav act"><span class="ni">📋</span>Licencias Náuticas</div>
+        <div class="sbnav"><span class="ni">⇄</span>Transacciones</div>
+        <div class="sbsep"></div>
+        <div class="sbnav"><span class="ni">⚙</span>Administración</div>
+        <div class="sbbot"><div class="sbnav"><span class="ni">→</span>Cerrar Sesión</div></div>
+      </div>
+      <div class="main">
+        <div class="pgback"><span style="color:#9AA0AC;font-size:16px;cursor:pointer">←</span>
+          <div><div class="pgh">Emitir Duplicado</div><div class="pgsh">Licencia de Capitán NAU-2024-00312 · Carlos M. Rivera</div></div>
+        </div>
+        <div class="twocol">
+          <div class="dup-form">
+            <div class="ict" style="margin-bottom:14px">📄 Detalles del Duplicado</div>
+            <div class="form-row">
+              <div class="form-lbl">Motivo del duplicado</div>
+              <select class="form-sel"><option>Pérdida de la licencia original</option><option>Deterioro o daño</option><option>Cambio de información</option><option>Otro</option></select>
+            </div>
+            <div class="form-row">
+              <div class="form-lbl">Declaración bajo juramento</div>
+              <div style="background:#F4F6F9;border:1px solid #E4E8EF;border-radius:6px;padding:8px 10px;font-size:11px;color:#555;line-height:1.5">Declaro que la información provista es correcta y que la licencia original no está en mi posesión.</div>
+            </div>
+            <div class="form-row">
+              <div class="form-lbl">Método de pago</div>
+              <select class="form-sel"><option>Efectivo en ventanilla</option><option>Tarjeta de crédito/débito</option></select>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid #E4E8EF">
+              <span>Total</span><span>$25.00</span>
+            </div>
+            <button class="form-sub" style="margin-top:12px">✓ Confirmar y Emitir Duplicado</button>
+          </div>
+          <div class="icard">
+            <div class="ict">✓ Información del Duplicado</div>
+            <div style="font-size:11.5px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #F0F0F0">
+              <div style="color:#8B8F97;font-size:10px;margin-bottom:2px">Titular</div>
+              <div style="font-weight:600">Carlos M. Rivera</div>
+            </div>
+            <div style="font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Licencia Original</span><span style="font-weight:600">NAU-2024-00312</span></div>
+            <div style="font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Tipo</span><span>Capitán · Master Near Coastal</span></div>
+            <div style="font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Región</span><span>Metro</span></div>
+            <div style="font-size:11px;display:flex;justify-content:space-between"><span style="color:#8B8F97">Núm. Duplicado</span><span style="font-weight:600;color:#2563EB">NAU-2024-00312-D1</span></div>
+            <div style="margin-top:14px;padding:10px;background:#F0FFF4;border-radius:6px;border:1px solid #BBF7D0">
+              <div style="font-size:10px;font-weight:600;color:#166534;margin-bottom:3px">Validación del certificado</div>
+              <div style="font-size:10px;color:#15803D;line-height:1.5">El duplicado llevará el número <strong>NAU-2024-00312-D1</strong> y un sello de validación que puede verificarse digitalmente.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann">
+    <div class="ann-ey">Paso 03 · Sistema</div>
+    <div class="ann-t">Duplicado con número de validación y sello</div>
+    <div class="ann-b">El sistema genera un número de duplicado trazable (NAU-2024-00312-D1) y emite el certificado con sello de validación digital.</div>
+    <div class="callout c-future">✦ Estado futuro solicitado por Iris: <em>"Put some kind of validation control to the certificate — a number, a stamp — so it can be validated."</em></div>
+    <div class="callout c-action">▸ El oficial confirma. El sistema registra la transacción e imprime el duplicado.</div>
+  </div>
+</div>
+
+<!-- ESTADO FUTURO -->
+<div class="futuro">
+  <div class="fut-in">
+    <div class="fut-ey">Sesión con Iris &amp; Elid · Hallazgos</div>
+    <div class="fut-t">Estado Futuro — Licencias Náuticas</div>
+    <div class="fut-s">Lo que existe hoy, lo que se solicitó, y por qué importa.</div>
+    <div class="fut-grid">
+      <div class="fc">
+        <div class="fc-mod">Licencias · Tipo Capitán</div>
+        <div class="fc-t">Licencia de Capitán es vitalicia — solo duplicados, no renovaciones</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">El prototipo mostraba "Renovar Licencia" como acción para la Licencia de Capitán — incorrecto según el proceso.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Remover "Renovar" del panel de Capitán. La acción principal es "Emitir Duplicado". El sistema debe advertirlo explícitamente.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">Iris confirmó: "Renovar no aplica aquí. Los duplicados son la transacción real."</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Licencias · Certificados</div>
+        <div class="fc-t">Validación del certificado por número o sello</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">No existe mecanismo de validación para certificados de cursos de navegación emitidos por academias.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Control de validación en cada certificado — número único y sello verificable digitalmente por la RNA.</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">"Put some kind of validation control to the certificate, at least a number, a stamp." Evita certificados fraudulentos.</div></div>
+      </div>
+      <div class="fc">
+        <div class="fc-mod">Proceso Backstage · Academias</div>
+        <div class="fc-t">Canal de datos Academia → RNA más seguro y automatizado</div>
+        <div class="fr"><div class="fl">Hoy</div><div class="fv">Las listas de asistencia se envían al correo personal de educadores — canal no estandarizado y poco confiable.</div></div>
+        <div class="fr"><div class="fl">Futuro</div><div class="fv new">Automatización vía email estructurado o portal de envío para academias autorizadas (Master Boating, Mar Navigation, Navegando PR, Power Squadron, Coast Guard Aux).</div></div>
+        <div class="fr"><div class="fl">Por qué</div><div class="fv">"An email to the entities can't be the most effective way." Los errores en listas son frecuentes y la corrección es manual.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /flow-wrap -->
+</section>
+<!-- END FLOW 4 -->
+
+<!-- ════ COLOPHON ════ -->
+<footer class="colophon">
+  <div>POSEIDÓN · <b>Flujos de Usuario</b> · Flujos 01–04</div>
+  <div>Paoli Group · DRNA · Oficina del Comisionado de Navegación</div>
+</footer>
+
+<script>
+function showFlow(id, btn) {
+  document.querySelectorAll('.flow-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
